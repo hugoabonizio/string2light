@@ -1,0 +1,80 @@
+<!doctype html>
+<html class="no-js" lang="">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=UTF-8">
+    <title></title>
+  </head>
+  <body>
+    <input id="name" value ="NOME"/>
+    <input id="password" value ="SENHA"/>
+    <input id="interval" value ="20"/>
+    <input id="final"/>
+    <button onclick="run()" id="ok-btn">OK</button>
+    <button onclick="stop()">Stop</button>
+
+    <script>
+      function convert(input) {
+        var output = ''
+        for (var i = 0; i < input.length; i++) {
+          output += pad(input[i].charCodeAt(0).toString(2)) + " "
+        }
+        return output
+      }
+
+      var blink_interval,countdown
+      function run() {
+        stop()
+
+        var name = convert(document.getElementById('name').value)
+        var password = convert(document.getElementById('password').value)
+        document.getElementById('final').value = name + " " + password
+        // final = document.getElementById('final').value
+        var interval = document.getElementById('interval').value
+
+        var final = bits(16, true) + bits(8) + name + bits(16) + password + bits(16)
+
+        var counter = 3
+        document.getElementById('ok-btn').innerText = counter
+        countdown = setInterval(function () {
+          document.getElementById('ok-btn').innerText = --counter
+
+          if (counter == 0) {
+            clearInterval(countdown)
+              blink_interval = setInterval(blink(final, 0), interval)
+            document.getElementById('ok-btn').innerText = 'OK'
+          }
+        }, 1000)
+      }
+
+      function blink(bits, i) {
+        return function () {
+          var bit = bits[i]
+          if (bit != ' ') {
+            if (bit === undefined) return stop()
+
+            document.body.style.background = Number(bit) ? '#FFF' : '#000'
+            // console.log(Number(bit), document.body.style.background)
+          }
+          console.log(bit, i++)
+        }
+      }
+
+      function pad(num) {
+        return "00000000".slice(String(num).length) + num
+      }
+
+      function stop() {
+        clearInterval(blink_interval)
+        clearInterval(countdown)
+        document.getElementById('ok-btn').innerText = 'OK'
+        document.body.style.background = '#FFF'
+      }
+
+      function bits(times, alternate) {
+        if (alternate)
+          return '01'.repeat(times / 2)
+        return '0'.repeat(times)
+      }
+    </script>
+  </body>
+</html>
